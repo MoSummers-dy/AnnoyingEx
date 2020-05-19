@@ -7,19 +7,19 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 
-class MessageApiManager(private val context: Context) {
+class MessageApiManager(context: Context) {
     private val queue: RequestQueue = Volley.newRequestQueue(context)
     var listOfMessages: List<String>
 
     init {
         listOfMessages = listOf("unable to retrieve message")
 
-        this.getListOfMessages({messageList ->
+        this.getListOfMessages { messageList ->
             listOfMessages = messageList
-        }, {})
+        }
     }
 
-    fun getListOfMessages(onMessageListReady: (List<String>) -> Unit, onError: (() -> Unit)? = null) {
+    fun getListOfMessages(onMessageListReady: (List<String>) -> Unit) {
         val messageListUrl = "https://raw.githubusercontent.com/echeeUW/codesnippets/master/ex_messages.json"
 
         val request = StringRequest(

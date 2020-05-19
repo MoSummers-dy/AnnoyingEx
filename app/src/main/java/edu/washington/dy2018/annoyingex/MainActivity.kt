@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
             annoyingExApp.annoyExManager.startAnnoyingEx()
         }
 
-        btnBlock.setOnClickListener() {
+        btnBlock.setOnClickListener {
             annoyingExApp.annoyExManager.stopWork()
         }
     }

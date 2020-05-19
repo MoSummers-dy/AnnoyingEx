@@ -1,11 +1,10 @@
 package edu.washington.dy2018.annoyingex
 
 import android.content.Context
-import android.util.Log
 import androidx.work.*
 import java.util.concurrent.TimeUnit
 
-class AnnoyExManager(private val context: Context) {
+class AnnoyExManager(context: Context) {
     private var workManager = WorkManager.getInstance(context)
 
     fun startAnnoyingEx() {

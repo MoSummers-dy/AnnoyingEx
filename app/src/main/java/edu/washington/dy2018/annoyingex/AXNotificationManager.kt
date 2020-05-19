@@ -20,9 +20,9 @@ class AXNotificationManager(private val context: Context) {
         createChannel()
         messageApiManager = (context as AnnoyingExApp).messageApiManager
         listOfMessages = messageApiManager.listOfMessages
-        messageApiManager.getListOfMessages({messageList ->
+        messageApiManager.getListOfMessages {
             listOfMessages = messageApiManager.listOfMessages
-        }, {})
+        }
     }
 
     fun postItNote() {
@@ -46,7 +46,7 @@ class AXNotificationManager(private val context: Context) {
         notificationManagerCompat.notify(counter, notification)
     }
 
-    fun createChannel() {
+    private fun createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Notifications"
             val descriptionText = "Messages from the annoying ex"
