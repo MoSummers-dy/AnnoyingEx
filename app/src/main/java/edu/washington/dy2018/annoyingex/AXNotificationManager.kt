@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import kotlin.random.Random
@@ -15,6 +14,7 @@ class AXNotificationManager(private val context: Context) {
     private val notificationManagerCompat = NotificationManagerCompat.from(context)
     private var messageApiManager: MessageApiManager
     private var listOfMessages: List<String>
+    private var counter = 0
 
     init {
         createChannel()
@@ -22,14 +22,12 @@ class AXNotificationManager(private val context: Context) {
         listOfMessages = messageApiManager.listOfMessages
         messageApiManager.getListOfMessages({messageList ->
             listOfMessages = messageApiManager.listOfMessages
-            Log.i("dy", listOfMessages[0])
         }, {})
     }
 
     fun postItNote() {
         val mainIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("hello", "word")
         }
 
         val pendingMainIntent = PendingIntent.getActivity(context, 0, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -44,7 +42,8 @@ class AXNotificationManager(private val context: Context) {
             .setAutoCancel(true)
             .build()
 
-        notificationManagerCompat.notify(Random.nextInt(), notification)
+        counter++
+        notificationManagerCompat.notify(counter, notification)
     }
 
     fun createChannel() {

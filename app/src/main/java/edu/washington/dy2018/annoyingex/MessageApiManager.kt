@@ -1,8 +1,6 @@
 package edu.washington.dy2018.annoyingex
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
@@ -29,13 +27,9 @@ class MessageApiManager(private val context: Context) {
             { response ->
                 // success
                 val gson = Gson()
-                Log.i("dy", "gson succeed")
                 val allMessages = gson.fromJson(response, AllMessages::class.java)
-                Log.i("dy", "all Messages received")
                 onMessageListReady(allMessages.messages)
-            }, {
-                Log.i("dy", "Fetch failed")
-            }
+            }, {}
         )
 
         queue.add(request)

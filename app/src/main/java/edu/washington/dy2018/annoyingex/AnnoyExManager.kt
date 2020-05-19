@@ -17,8 +17,8 @@ class AnnoyExManager(private val context: Context) {
             .setRequiresCharging(true)
             .build()
 
-        //Todo: remove the commented lines here; it is only for testing
-        val workRequest = OneTimeWorkRequestBuilder<PostNotificationWorker>()
+        //Todo: remove the commented line ".setConstraints(constraints)" here
+        val workRequest = PeriodicWorkRequestBuilder<PostNotificationWorker>(20, TimeUnit.MINUTES)
             .setInitialDelay(5, TimeUnit.SECONDS)
             // .setConstraints(constraints)
             .addTag(AX_WORK_REQUEST_TAG)
