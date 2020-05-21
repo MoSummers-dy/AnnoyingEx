@@ -25,7 +25,6 @@ class AXNotificationManager(private val context: Context) {
         messageApiManager.getListOfMessages {
             listOfMessages = messageApiManager.listOfMessages
         }
-        startFetching()
     }
 
     fun postItNote() {
@@ -36,7 +35,7 @@ class AXNotificationManager(private val context: Context) {
             putExtra(MESSAGE, listOfMessages[randomIndex])
         }
 
-        val pendingMainIntent = PendingIntent.getActivity(context, Random.nextInt(), mainIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingMainIntent = PendingIntent.getActivity(context, randomIndex, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_sentiment_very_dissatisfied_black_24dp)
@@ -63,41 +62,9 @@ class AXNotificationManager(private val context: Context) {
         }
     }
 
-    // Extra Credit 2
-    private fun startFetching() {
-        if (isFetchRunning()) {
-            stopWork()
-        }
-
-        val constraints = Constraints.Builder()
-            .setRequiresBatteryNotLow(true)
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val workRequest = PeriodicWorkRequestBuilder<FetchDataWorker>(2, TimeUnit.DAYS)
-            .setConstraints(constraints)
-            .addTag(FETCH_WORK_REQUEST_TAG)
-            .build()
-
-        workManager.enqueue(workRequest)
-    }
-
-    private fun isFetchRunning(): Boolean {
-        return when (workManager.getWorkInfosByTag(FETCH_WORK_REQUEST_TAG).get().firstOrNull()?.state) {
-            WorkInfo.State.RUNNING,
-            WorkInfo.State.ENQUEUED -> true
-            else -> false
-        }
-    }
-
-    private fun stopWork() {
-        workManager.cancelAllWorkByTag(FETCH_WORK_REQUEST_TAG)
-    }
-
     companion object {
         const val CHANNEL_ID = "CHANNELID"
         const val MESSAGE = "MESSAGE"
-        const val FETCH_WORK_REQUEST_TAG = "AX_WORK_REQUEST_TAG"
     }
 
 }

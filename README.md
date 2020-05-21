@@ -21,8 +21,6 @@ Default Screen
 Notification
 <img src="./screenshots/hw5/notice.png" width="200" height="420" />
 
-Show the message when clicked
-<img src="./screenshots/hw5/message.png" width="200" height="420" />
 
 ## Special set up/installation instructions or how to use the app
 In the ```AnnoyingExManger.kt```, I have commented line 22 which is setting the constraints for the push notification worker.

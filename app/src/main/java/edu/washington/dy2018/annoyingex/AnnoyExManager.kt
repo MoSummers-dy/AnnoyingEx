@@ -24,6 +24,7 @@ class AnnoyExManager(context: Context) {
             .build()
 
         workManager.enqueue(workRequest)
+        startFetching()
     }
 
     private fun isAXRunning(): Boolean {
@@ -36,9 +37,42 @@ class AnnoyExManager(context: Context) {
 
     fun stopWork() {
         workManager.cancelAllWorkByTag(AX_WORK_REQUEST_TAG)
+        workManager.cancelAllWorkByTag(FETCH_WORK_REQUEST_TAG)
+    }
+
+    // Extra Credit 2
+    private fun startFetching() {
+        if (isFetchRunning()) {
+            stopFetchWork()
+        }
+
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val workRequest = PeriodicWorkRequestBuilder<FetchDataWorker>(2, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .addTag(FETCH_WORK_REQUEST_TAG)
+            .build()
+
+        workManager.enqueue(workRequest)
+    }
+
+    private fun isFetchRunning(): Boolean {
+        return when (workManager.getWorkInfosByTag(FETCH_WORK_REQUEST_TAG).get().firstOrNull()?.state) {
+            WorkInfo.State.RUNNING,
+            WorkInfo.State.ENQUEUED -> true
+            else -> false
+        }
+    }
+
+    private fun stopFetchWork() {
+        workManager.cancelAllWorkByTag(FETCH_WORK_REQUEST_TAG)
     }
 
     companion object {
         const val AX_WORK_REQUEST_TAG = "AX_WORK_REQUEST_TAG"
+        const val FETCH_WORK_REQUEST_TAG = "FETCH_WORK_REQUEST_TAG"
     }
 }
