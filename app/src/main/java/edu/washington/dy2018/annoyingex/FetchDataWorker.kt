@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
-class PostNotificationWorker(private val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+class FetchDataWorker(private val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
     override fun doWork(): Result {
         val axApp = context as AnnoyingExApp
-        axApp.axNotificationManager.postItNote()
+        axApp.messageApiManager.getListOfMessages{
+            axApp.axNotificationManager.listOfMessages = it
+        }
         return Result.success()
     }
 }

@@ -2,6 +2,7 @@ package edu.washington.dy2018.annoyingex
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import edu.washington.dy2018.annoyingex.AXNotificationManager.Companion.MESSAGE
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -19,5 +20,9 @@ class MainActivity : AppCompatActivity() {
         btnBlock.setOnClickListener {
             annoyingExApp.annoyExManager.stopWork()
         }
+
+        // Extra Credit 1
+        val dataFromNotification = intent.getStringExtra(MESSAGE)
+        tvMessage.text = dataFromNotification;
     }
 }

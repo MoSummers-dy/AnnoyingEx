@@ -8,13 +8,16 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.*
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 class AXNotificationManager(private val context: Context) {
     private val notificationManagerCompat = NotificationManagerCompat.from(context)
+    private var workManager = WorkManager.getInstance(context)
     private var messageApiManager: MessageApiManager
-    private var listOfMessages: List<String>
     private var counter = 0
+    var listOfMessages: List<String>
 
     init {
         createChannel()
@@ -23,19 +26,23 @@ class AXNotificationManager(private val context: Context) {
         messageApiManager.getListOfMessages {
             listOfMessages = messageApiManager.listOfMessages
         }
+        startFetching()
     }
 
     fun postItNote() {
+        val randomIndex = Random.nextInt(listOfMessages.size)
+
         val mainIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(MESSAGE, listOfMessages[randomIndex])
         }
 
-        val pendingMainIntent = PendingIntent.getActivity(context, 0, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingMainIntent = PendingIntent.getActivity(context, Random.nextInt(), mainIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_sentiment_very_dissatisfied_black_24dp)
             .setContentTitle("You Know Who Again")
-            .setContentText(listOfMessages[Random.nextInt(listOfMessages.size)])
+            .setContentText(listOfMessages[randomIndex])
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingMainIntent)
@@ -58,8 +65,41 @@ class AXNotificationManager(private val context: Context) {
         }
     }
 
+    // Extra Credit 2
+    private fun startFetching() {
+        if (isFetchRunning()) {
+            stopWork()
+        }
+
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val workRequest = PeriodicWorkRequestBuilder<FetchDataWorker>(2, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .addTag(FETCH_WORK_REQUEST_TAG)
+            .build()
+
+        workManager.enqueue(workRequest)
+    }
+
+    private fun isFetchRunning(): Boolean {
+        return when (workManager.getWorkInfosByTag(FETCH_WORK_REQUEST_TAG).get().firstOrNull()?.state) {
+            WorkInfo.State.RUNNING,
+            WorkInfo.State.ENQUEUED -> true
+            else -> false
+        }
+    }
+
+    private fun stopWork() {
+        workManager.cancelAllWorkByTag(FETCH_WORK_REQUEST_TAG)
+    }
+
     companion object {
         const val CHANNEL_ID = "CHANNELID"
+        const val MESSAGE = "MESSAGE"
+        const val FETCH_WORK_REQUEST_TAG = "AX_WORK_REQUEST_TAG"
     }
 
 }
