@@ -16,7 +16,6 @@ class AXNotificationManager(private val context: Context) {
     private val notificationManagerCompat = NotificationManagerCompat.from(context)
     private var workManager = WorkManager.getInstance(context)
     private var messageApiManager: MessageApiManager
-    private var counter = 0
     var listOfMessages: List<String>
 
     init {
@@ -49,8 +48,7 @@ class AXNotificationManager(private val context: Context) {
             .setAutoCancel(true)
             .build()
 
-        counter++
-        notificationManagerCompat.notify(counter, notification)
+        notificationManagerCompat.notify(randomIndex, notification)
     }
 
     private fun createChannel() {
